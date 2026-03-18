@@ -34,6 +34,7 @@ jobs:
     name: Publish to npm
     runs-on: ubuntu-latest
     needs: [build]
+    environment: npm       # Must match the environment in npmjs trusted publisher config
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
