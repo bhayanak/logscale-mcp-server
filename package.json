@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "description": "Monorepo for LogScale MCP Server + VS Code Extension",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bhayanak/logscale-mcp-server"
+  },
   "scripts": {
     "build": "pnpm -r build",
     "test": "pnpm -r test",

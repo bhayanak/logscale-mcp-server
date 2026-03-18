@@ -247,4 +247,4 @@ Check the `LOGSCALE_REPOSITORY` name matches exactly (case-sensitive).
 
 ## License
 
-[MIT](../../LICENSE)
+[MIT](https://github.com/bhayanak/logscale-mcp-server/blob/main/LICENSE)

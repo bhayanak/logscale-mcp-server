@@ -121,4 +121,4 @@ ERROR | timechart(span=5m)
 
 ## License
 
-[MIT](../../LICENSE)
+[MIT](https://github.com/bhayanak/logscale-mcp-server/blob/main/LICENSE)
