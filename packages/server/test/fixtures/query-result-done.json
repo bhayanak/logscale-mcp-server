@@ -1,0 +1,88 @@
+{
+  "done": true,
+  "cancelled": false,
+  "events": [
+    {
+      "@timestamp": 1773753430690,
+      "@id": "event-001",
+      "log": "2026-03-17T13:17:10Z ERROR Could not resolve hostname for 10.0.0.1",
+      "kubernetes.namespace_name": "privatecloud-ai",
+      "kubernetes.pod_name": "platform-manager-7f8b5f6878-d66pv",
+      "kubernetes.container_name": "platform-manager",
+      "response_code": "500",
+      "method": "GET"
+    },
+    {
+      "@timestamp": 1773753430500,
+      "@id": "event-002",
+      "log": "2026-03-17T13:17:10Z ERROR Expected exactly 9 IPs, got 7",
+      "kubernetes.namespace_name": "privatecloud-ai",
+      "kubernetes.pod_name": "platform-manager-7f8b5f6878-d66pv",
+      "kubernetes.container_name": "platform-manager",
+      "response_code": "500",
+      "method": "POST"
+    },
+    {
+      "@timestamp": 1773753430300,
+      "@id": "event-003",
+      "log": "2026-03-17T13:17:10Z INFO Normal operation log line that is not an error",
+      "kubernetes.namespace_name": "privatecloud-ai",
+      "kubernetes.pod_name": "api-server-abc123-xyz",
+      "kubernetes.container_name": "api-server",
+      "response_code": "200",
+      "method": "GET"
+    }
+  ],
+  "metaData": {
+    "eventCount": 3,
+    "isAggregate": false,
+    "processedBytes": 407753012940,
+    "processedEvents": 1005093,
+    "timeMillis": 496,
+    "queryStart": 1773667030690,
+    "queryEnd": 1773753430690,
+    "pollAfter": 1000,
+    "totalWork": 100,
+    "workDone": 100,
+    "resultBufferSize": 3,
+    "costs": {
+      "liveCost": 0,
+      "staticCost": 0.5,
+      "liveCostRate": 0,
+      "staticCostRate": 0.001
+    },
+    "querySpent": {
+      "oneMinute": { "queryCount": 1, "staticCost": 0.5, "liveCost": 0 },
+      "tenMinutes": { "queryCount": 1, "staticCost": 0.5, "liveCost": 0 },
+      "hour": { "queryCount": 3, "staticCost": 1.5, "liveCost": 0 },
+      "day": { "queryCount": 10, "staticCost": 5.0, "liveCost": 0 }
+    },
+    "quotaTotalSpent": {
+      "oneMinute": { "queryCount": 1, "staticCost": 0.5, "liveCost": 0 },
+      "tenMinutes": { "queryCount": 1, "staticCost": 0.5, "liveCost": 0 },
+      "hour": { "queryCount": 3, "staticCost": 1.5, "liveCost": 0 },
+      "day": { "queryCount": 10, "staticCost": 5.0, "liveCost": 0 }
+    }
+  },
+  "warnings": [],
+  "fieldStats": [
+    {
+      "fieldName": "response_code",
+      "numOfOccurrences": 3,
+      "numOfDistinctValues": 2,
+      "topValues": { "500": 2, "200": 1 }
+    },
+    {
+      "fieldName": "method",
+      "numOfOccurrences": 3,
+      "numOfDistinctValues": 2,
+      "topValues": { "GET": 2, "POST": 1 }
+    },
+    {
+      "fieldName": "kubernetes.container_name",
+      "numOfOccurrences": 3,
+      "numOfDistinctValues": 2,
+      "topValues": { "platform-manager": 2, "api-server": 1 }
+    }
+  ]
+}

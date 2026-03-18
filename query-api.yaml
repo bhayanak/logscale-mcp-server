@@ -1,0 +1,712 @@
+---
+openapi: 3.0.0
+info:
+    title: LogScale Query API
+    description: API to manage queries in LogScale
+    version: 1.1.0
+
+paths:
+    /api/v1/queryjobs:
+        post:
+            operationId: submitQuery
+            summary: Submit query
+            requestBody:
+              $ref: "#/components/requestBodies/SubmitQueryBody"
+            responses:
+                '200':
+                    description: OK
+                    content:
+                        'application/json':
+                            schema:
+                                $ref: "#/components/schemas/QueryJobStartedResult"
+                '500':
+                    description: Internal Server Error
+    /api/v1/queryjobs/{id}:
+        get:
+            operationId: getQueryResult
+            parameters:
+              - name: id
+                in: path
+                required: true
+                schema:
+                  type: string
+              - name: onlyHeartbeat
+                description: "Keep the query alive without actually transferring results"
+                in: query
+                required: false
+                schema:
+                  type: boolean
+              - name: pageRequest
+                description: "A request for a given page into the result, i.e. a limit and offset into the result."
+                in: query
+                required: false
+                schema:
+                  $ref: "#/components/schemas/PageRequest"
+              - name: paginationSortOrder
+                description: "The field by which to sort the result, and whether sort in ascending or descending order."
+                in: query
+                required: false
+                schema:
+                  $ref: "#/components/schemas/PaginationSortOrder"
+              - name: exportRequest
+                description: "A request for exporting the results in a given MIME type."
+                in: query
+                required: false
+                schema:
+                  $ref: "#/components/schemas/ExportRequest"
+            responses:
+                '200':
+                    description: OK
+                    content:
+                        'application/json':
+                            schema:
+                                $ref: "#/components/schemas/QueryResult"
+                '500':
+                    description: Internal Server Error
+
+components:
+    requestBodies:
+      SubmitQueryBody:
+        description: A JSON object containing query information
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryJobInput'
+    schemas:
+        QueryJobStartedResult:
+            type: object
+            required:
+                - id
+            properties:
+                id:
+                    type: string
+                    description: "The id of the started queryjob. This can be used to poll results."
+                queryOnView:
+                    type: string
+                    description: "A string representation of the optimized query (the \"query plan\"). For advanced users."
+                hashedQueryOnView:
+                    type: string
+                    description: "A string hash of the optimized query (the \"query plan\"). For advanced users."
+                staticMetaData:
+                    type: object
+                    x-class-name: StaticQueryMetaData
+                    properties:
+                        executionMode:
+                            $ref: "#/components/schemas/ExecutionMode"
+        ExecutionMode:
+            type: object
+            required:
+                - runMode
+            properties:
+                runMode:
+                    type: string
+                    description: The mode in which the query runs.
+                details:
+                    type: string
+                    description: |- 
+                        Details related to the run mode, e.g., why the query
+                        runs that way.
+            description: |-
+                If provided, indicates that the backend is running the query in 
+                a special mode, and may include information about the reason for 
+                selecting that mode.
+        QueryResult:
+            type: object
+            required:
+                - done
+                - cancelled
+                - metaData
+                - events
+            properties:
+                warnings:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/WarningJson"
+                done:
+                    type: boolean
+                cancelled:
+                    type: boolean
+                events:
+                    type: array
+                    items:
+                        type: object
+                        x-class-name: Event
+                        properties:
+                            "@timestamp":
+                                type: integer
+                                format: int64
+                        additionalProperties:
+                            type: string
+                queryEventDistribution:
+                    $ref: "#/components/schemas/QueryEventDistributionJson"
+                metaData:
+                    $ref: "#/components/schemas/QueryMetaDataJson"
+                filterMatches:
+                    type: array
+                    items:
+                        type: object
+                        x-class-name: EventFieldMatches
+                        additionalProperties:
+                            type: array
+                            items:
+                                type: object
+                                x-class-name: FilterMatch
+                                required:
+                                    - filterId
+                                    - ranges
+                                properties:
+                                    filterId:
+                                        type: integer
+                                    ranges:
+                                        type: array
+                                        items:
+                                            type: object
+                                            x-class-name: FilterMatchRange
+                                            required:
+                                                - start
+                                                - length
+                                            properties:
+                                                start:
+                                                    type: integer
+                                                length:
+                                                    type: integer
+                filesUsed:
+                    type: array
+                    items:
+                        type: object
+                        x-class-name: FileInfo
+                        required:
+                            - name
+                            - contentHash
+                            - modifiedTimestamp
+                            - tableType
+                        properties:
+                            name:
+                              type: string
+                            contentHash:
+                              type: string
+                            modifiedTimestamp:
+                              type: integer
+                              format: int64
+                            queryToRead:
+                              type: string
+                            tableType:
+                              type: string
+                              enum:
+                                - File
+                                - Table
+                                - RemoteTable
+                                - Unknown
+                fieldStats:
+                  description: "Counts of which fields occur in the result, their top values and how often those occur."
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/FieldStat'
+
+        WarningJson:
+            type: object
+            required:
+                - code
+                - message
+                - category
+            properties:
+                classification:
+                    type: string
+                code:
+                    description: A stable message code that can be used to compare error types or look up error descriptions.
+                    type: string
+                message:
+                    description: A Human readable text describing the warning.
+                    type: string
+                category:
+                    type: string
+                    description: |-
+                        A category that allows clients to deal with warnings more broadly.
+                        Rather than have to switch on each error code, categories allow you
+                        to deal with a whole set of warnings the same way.
+                        
+                        - QUERY_STATE - indicates the query is producing a problem on the cluster, e.g. result sets that are too large.
+                        - CLUSTER - indicates the cluster is under maintenance or is performing slowly in a non-fatal way.
+                        - ACCOUNT - indicates the user's quota or permissions are impacting the results in some way.
+                        - REPOSITORY - indicates that settings or the state of a searched repository is impacting results.
+                        - UNSPECIFIED - an uncategoried error.
+                        
+                        Other values may be returned if cluster nodes are out of sync, using a newer or older version
+                        of Humio.
+        QueryEventDistributionJson:
+            type: object
+            required:
+                - events
+                - extraData
+            properties:
+                events:
+                    type: array
+                    items:
+                        type: object
+                        x-class-name: EventDistributionBucket
+                        required:
+                            - _count
+                            - _bucket
+                        properties:
+                            _count:
+                                type: string
+                            _bucket:
+                                type: string
+                extraData:
+                    type: object
+                    x-class-name: EventDistributionExtraData
+                    properties:
+                        bucket_first_bucket:
+                            type: string
+                        bucket_last_bucket:
+                            type: string
+                        bucket_span_humanized:
+                            type: string
+                        bucket_span_millis:
+                            type: string
+        QueryMetaDataJson:
+            type: object
+            required:
+                - eventCount
+                - warnings
+                - isAggregate
+                - extraData
+                - queryStart
+                - queryEnd
+                - processedBytes
+                - processedEvents
+                - timeMillis
+                - totalWork
+                - resultBufferSize
+                - workDone
+                - costs
+                - querySpent
+                - quotaTotalSpent
+            properties:
+                eventCount:
+                    type: integer
+                warning:
+                    type: string
+                    deprecated: true
+                    description: "Use 'warnings' in the message root instead"
+                warnings:
+                    type: array
+                    deprecated: true
+                    description: "Use 'warnings' in the message root instead"
+                    items:
+                        type: string
+                isAggregate:
+                    type: boolean
+                fieldOrder:
+                    type: array
+                    items:
+                        type: string
+                extraData:
+                    $ref: "#/components/schemas/QueryExtraData"
+                queryStart:
+                    type: integer
+                queryEnd:
+                    type: integer
+                processedBytes:
+                    type: integer
+                processedEvents:
+                    type: integer
+                timeMillis:
+                    type: integer
+                queuedMillis:
+                    type: integer
+                totalWork:
+                    type: integer
+                resultBufferSize:
+                    type: integer
+                workDone:
+                    type: integer
+                filterQuery:
+                    $ref: "#/components/schemas/QueryJobInput"
+                namedFilterQueries:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                        - name
+                        - query
+                      x-class-name: NamedEventTab
+                      properties:
+                        name:
+                          type: string
+                        query:
+                          $ref: "#/components/schemas/QueryJobInput"
+                pollAfter:
+                    type: integer
+                costs:
+                    $ref: "#/components/schemas/QueryCostMetadata"
+                querySpent:
+                    $ref: "#/components/schemas/QueryQuotaMeta"
+                quotaTotalSpent:
+                    $ref: "#/components/schemas/QueryQuotaMeta"
+                responderVHost:
+                    type: integer
+                    format: int32
+                digestFlow:
+                    $ref: "#/components/schemas/DigestFlowMeta"
+        QueryExtraData:
+            type: object
+            properties:
+                sortOrder:
+                    type: array
+                    items:
+                        type: object
+                        required:
+                            - field
+                            - type
+                            - order
+                        x-class-name: SortOrderItem
+                        properties:
+                            field:
+                                type: string
+                            type:
+                                type: string
+                            order:
+                                type: string
+                timeSettingsOverwrittenFromQuery:
+                    type: object
+                    x-class-name: TimeSettingsOverwrittenFromQuery
+                    properties:
+                      start:
+                        type: string
+                      end:
+                        type: string
+                      timezoneName:
+                        type: string
+                correlateUsageInfo:
+                    type: object
+                    x-class-name: CorrelateUsageInfo
+                    required:
+                      - graphTopology
+                      - queryNames
+                      - isSequenced
+                      - isFormatPreservedInOutput
+                    properties:
+                        isSequenced:
+                          type: boolean
+                        isFormatPreservedInOutput:
+                          type: boolean
+                        queryNames:
+                            type: array
+                            items:
+                                type: string
+                        graphTopology:
+                            type: object
+                            x-class-name: CorrelateGraph
+                            properties:
+                                nodes:
+                                    type: array
+                                    items:
+                                        type: object
+                                        required:
+                                          - name
+                                          - kind
+                                        x-class-name: CorrelateGraphNode
+                                        properties:
+                                          name:
+                                            type: string
+                                          kind:
+                                            type: string
+                                edges:
+                                    type: array
+                                    items:
+                                        type: object
+                                        required:
+                                          - from
+                                          - to
+                                          - fromFieldName
+                                        x-class-name: CorrelateGraphEdge
+                                        properties:
+                                            from:
+                                                type: string
+                                            to:
+                                                type: string
+                                            fromFieldName:
+                                                type: string
+            additionalProperties:
+                type: string
+        DoneCriteria:
+          type: object
+          description: |
+            Allows the query coordinator to stop the query once certain conditions are met.
+            If any of the stop conditions are met, the query will be considered done.
+          properties:
+            fractionOfDataScanned:
+              type: number
+              description: |-
+                The query is considered done when least X percent of the input data is sampled.
+                It should be a number in the range ]0;1] where 1 mean all events (100%) and e.g. 0.1 is approximately 10%
+                of data that will be scanned. Sampling is done based on event size and not the number of events.
+            minimumMatchedEvents:
+              type: integer
+              description: |-
+                The query is done once at least X events have matched the filters before the first aggregation.
+                This can be useful if you just want to show some candidates or you consider a result to be good
+                enough when at least X events have been considered.
+            minimumResultRows:
+              type: integer
+              description: |-
+                The query is done once at least X rows are present in the output.
+                Note that if this criterion is used in conjunction with an aggregate function
+                there is no guarantee for how good the output results are as we don't know how much data
+                was processed to produce the result. But it is useful for e.g. find 10 events that match
+                this filter, similar to tail(), but does not guarantee that the most recent matches are returned.
+
+        QueryJobInput:
+            type: object
+            required:
+                - queryString
+            properties:
+                queryString:
+                    type: string
+                doneCriteria:
+                  $ref: "#/components/schemas/DoneCriteria"
+
+                languageVersion:
+                    type: string
+                start:
+                    $ref: "#/components/schemas/IntOrString"
+                end:
+                    $ref: "#/components/schemas/IntOrString"
+                ingestStart:
+                    $ref: "#/components/schemas/IntOrString"
+                ingestEnd:
+                    $ref: "#/components/schemas/IntOrString"
+                isInteractive:
+                    type: boolean
+                    default : false
+                showQueryEventDistribution:
+                    type: boolean
+                    default: false
+                    description: |
+                        If true Humio will return an additional resultset containing a histogram of the number of events over the time interval.
+                allowEventSkipping:
+                    type: boolean
+                    default: false
+                # TODO: Private
+                includeDeletedEvents:
+                    type: boolean
+                    default : false
+                noResultUntilDone:
+                    type: boolean
+                    default : false
+                    description: |
+                      If true, no events will be included in responses to polls until the static part of the query is done,
+                      at which point the full result set will be returned.
+                      Metadata and progress information will be updated on each poll.
+                isLive:
+                    type: boolean
+                    default : false
+                # TODO: Private
+                isRepeatingSubquery:
+                    type: boolean
+                    default : false
+                around:
+                    type: object
+                    x-class-name: Around
+                    required:
+                        - eventId
+                        - timestamp
+                    properties:
+                        eventId:
+                            type: string
+                        timestamp:
+                            type: integer
+                        numberOfEventsBefore:
+                            type: integer
+                            default: 100
+                            format: int32
+                        numberOfEventsAfter:
+                            type: integer
+                            default: 100
+                            format: int32
+                autobucketCount:
+                    type: integer
+                    format: int32
+                wantsAutoBucketing:
+                  type: boolean
+                  default: false
+                useIngestTime:
+                    type: boolean
+                    default: false
+                arguments:
+                    type: object
+                    x-class-name: QueryArguments
+                    additionalProperties:
+                        type: string
+                timeZone:
+                    type: string
+                timeZoneOffsetMinutes:
+                    type: integer
+                    format: int32
+                isAlertQuery:
+                    type: boolean
+                    default: false
+                    description: |
+                        Indicates whether the query comes from an alert or not.
+                dashboardFilter:
+                  type: string
+                dashboardFilterVersion:
+                  type: string
+                computeFieldStats:
+                  type: boolean
+                  default: false
+                  description: >-
+                    Whether to compute often each field occurs, along with the 
+                    top 10 values for each field, and how often they occur.
+                extraLogFields:
+                  type: object
+                  x-class-name: LogFields
+                  additionalProperties:
+                    type: string
+                nextRunInterval:
+                  x-class-name: NextRunIntervalInput
+                  type: object
+                  required:
+                    - start
+                    - end
+                  properties:
+                    start:
+                      type: integer
+                    end:
+                      type: integer
+
+        QueryCostMetadata:
+            type: object
+            required:
+                - liveCost
+                - staticCost
+                - liveCostRate
+                - staticCostRate
+            properties:
+                liveCost:
+                    type: number
+                    format: double
+                staticCost:
+                    type: number
+                    format: double
+                liveCostRate:
+                    type: number
+                    format: double
+                staticCostRate:
+                    type: number
+                    format: double
+        DigestFlowMeta:
+            type: object
+            required:
+                - minIngestTimeIncluded
+                - ingestTimeKnownGood
+                - maxIngestLatency
+            properties:
+                minIngestTimeIncluded:
+                    type: integer
+                ingestTimeKnownGood:
+                    type: integer
+                maxIngestLatency:
+                    type: integer
+        QueryQuotaMeta:
+            type: object
+            required:
+                - oneMinute
+                - tenMinutes
+                - hour
+                - day
+            properties:
+                oneMinute:
+                    $ref: "#/components/schemas/QueryQuotaSpent"
+                tenMinutes:
+                    $ref: "#/components/schemas/QueryQuotaSpent"
+                hour:
+                    $ref: "#/components/schemas/QueryQuotaSpent"
+                day:
+                    $ref: "#/components/schemas/QueryQuotaSpent"
+        QueryQuotaSpent:
+            type: object
+            required:
+                - queryCount
+                - staticCost
+                - liveCost
+            properties:
+                queryCount:
+                    type: integer
+                    format: int32
+                staticCost:
+                    type: integer
+                liveCost:
+                    type: integer
+        IntOrString:
+            oneOf:
+                - type: integer
+                  x-class-name: IntOrStringInt
+                - type: string
+                  x-class-name: IntOrStringString
+        PageRequest:
+            type: object
+            required:
+                - paginationLimit
+            properties:
+                paginationLimit:
+                  type: integer
+                  format: int32
+                  description: "The amount of events to return, i.e. the page size."
+                paginationOffset:
+                  type: integer
+                  format: int32
+                  description: "The offset into the events from which to return the page."
+        PaginationSortOrder:
+            type: object
+            required:
+                - sortBy
+            properties:
+                sortBy:
+                    type: string
+                    description: "The field name to sort the events by."
+                sortOrder:
+                    type: string
+                    enum:
+                      - asc
+                      - desc
+                    description: "Whether to sort the events in ascending or descending order."
+        ExportRequest:
+            type: object
+            required:
+              - mimeType
+            properties:
+                mimeType:
+                    type: string
+                    description: "Export of the query result in the given MIME type."
+                    enum:
+                      - "application/json"
+                      - "application/x-ndjson"
+                      - "text/csv"
+                      - "text/plain"
+                fieldsToExport:
+                    type: string
+                    description: "Fields to export when the given MIME type is text/csv."
+        FieldStat:
+          description: "A given field's occurrence in the result, along with its top values and their occurrences."
+          type: object
+          properties:
+            fieldName:
+              type: string
+            numOfOccurrences:
+              type: integer
+              format: int64
+            numOfDistinctValues:
+              type: integer
+              format: int64
+            topValues:
+              $ref: "#/components/schemas/TopValues"
+
+        TopValues:
+          description: "The top 10 values for a given field and how often each value occurs."
+          type: object
+          additionalProperties:
+            type: integer
+            format: int64

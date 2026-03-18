@@ -1,0 +1,5 @@
+{
+  "id": "test-job-123",
+  "queryOnView": "storagecentral",
+  "hashedQueryOnView": "abc123hash"
+}

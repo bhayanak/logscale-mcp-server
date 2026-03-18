@@ -1,0 +1,85 @@
+{
+  "name": "logscale-mcp-vscode",
+  "displayName": "LogScale MCP Server",
+  "description": "VS Code extension that provides an MCP server for querying CrowdStrike LogScale logs",
+  "version": "0.1.0",
+  "publisher": "logscale-mcp",
+  "engines": {
+    "vscode": "^1.96.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "mcp",
+    "logscale",
+    "crowdstrike",
+    "cql",
+    "logs",
+    "ai",
+    "copilot"
+  ],
+  "activationEvents": [],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "LogScale MCP Server",
+      "properties": {
+        "logscale.baseUrl": {
+          "type": "string",
+          "description": "LogScale instance URL (include path prefix like /logs if needed)",
+          "order": 1
+        },
+        "logscale.repository": {
+          "type": "string",
+          "description": "Default LogScale repository name",
+          "order": 2
+        },
+        "logscale.timeoutMs": {
+          "type": "number",
+          "default": 60000,
+          "description": "Maximum query poll timeout in milliseconds"
+        },
+        "logscale.pollIntervalMs": {
+          "type": "number",
+          "default": 1000,
+          "description": "Interval between poll requests in milliseconds"
+        },
+        "logscale.maxEvents": {
+          "type": "number",
+          "default": 200,
+          "description": "Default pagination limit for events"
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "logscale-mcp.showHealth",
+        "title": "LogScale MCP: Show Server Health"
+      }
+    ]
+  },
+  "scripts": {
+    "build": "node build.cjs",
+    "watch": "node build.cjs --watch",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/",
+    "format": "prettier --check \"src/**/*.ts\"",
+    "validate": "tsc --noEmit",
+    "package": "node build.cjs && vsce package --no-dependencies --allow-missing-repository --skip-license",
+    "ci": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.57",
+    "@types/vscode": "^1.96.0",
+    "@vscode/vsce": "^3.3.2",
+    "esbuild": "^0.25.0",
+    "eslint": "^9.28.0",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.57.1"
+  },
+  "dependencies": {
+    "logscale-mcp-server": "workspace:*"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "done": true,
+  "cancelled": false,
+  "events": [],
+  "metaData": {
+    "eventCount": 0,
+    "isAggregate": false,
+    "processedBytes": 500000000,
+    "processedEvents": 50000,
+    "timeMillis": 200,
+    "queryStart": 1773667030690,
+    "queryEnd": 1773753430690,
+    "pollAfter": 1000,
+    "totalWork": 100,
+    "workDone": 100,
+    "resultBufferSize": 0,
+    "costs": {
+      "liveCost": 0,
+      "staticCost": 0.2,
+      "liveCostRate": 0,
+      "staticCostRate": 0.001
+    },
+    "querySpent": {
+      "oneMinute": { "queryCount": 1, "staticCost": 0.2, "liveCost": 0 },
+      "tenMinutes": { "queryCount": 1, "staticCost": 0.2, "liveCost": 0 },
+      "hour": { "queryCount": 1, "staticCost": 0.2, "liveCost": 0 },
+      "day": { "queryCount": 1, "staticCost": 0.2, "liveCost": 0 }
+    },
+    "quotaTotalSpent": {
+      "oneMinute": { "queryCount": 1, "staticCost": 0.2, "liveCost": 0 },
+      "tenMinutes": { "queryCount": 1, "staticCost": 0.2, "liveCost": 0 },
+      "hour": { "queryCount": 1, "staticCost": 0.2, "liveCost": 0 },
+      "day": { "queryCount": 1, "staticCost": 0.2, "liveCost": 0 }
+    }
+  },
+  "warnings": [
+    {
+      "code": "WARN_001",
+      "message": "Query matched no events in the given time range",
+      "category": "query"
+    }
+  ]
+}

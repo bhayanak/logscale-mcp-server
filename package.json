@@ -1,0 +1,30 @@
+{
+  "name": "logscale-mcp-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Monorepo for LogScale MCP Server + VS Code Extension",
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "test:coverage": "pnpm -r test:coverage",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "format": "pnpm -r format",
+    "validate": "pnpm -r validate",
+    "ci": "pnpm -r run ci",
+    "sbom": "trivy fs --severity CRITICAL,HIGH --scanners vuln .",
+    "release": "standard-version",
+    "release:minor": "standard-version --release-as minor",
+    "release:major": "standard-version --release-as major"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "standard-version": "^9.5.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "esbuild": ">=0.25.0"
+    }
+  }
+}
