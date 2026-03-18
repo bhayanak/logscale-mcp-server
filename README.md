@@ -186,11 +186,11 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 Install the bundled VS Code extension for a GUI-configured experience or download from marketplace:
 
 ```bash
-# From local VSIX
-code --install-extension packages/vscode-extension/logscale-mcp-vscode-0.1.0.vsix
-
 # From VSCode Extensions marketplace
 Search "LogScale MCP Server", install.
+
+# From local VSIX
+code --install-extension packages/vscode-extension/logscale-mcp-vscode-0.1.0.vsix
 ```
 
 The extension provides VS Code settings for `logscale.baseUrl`, `logscale.repository`, `logscale.timeoutMs`, `logscale.pollIntervalMs`, and `logscale.maxEvents`.
