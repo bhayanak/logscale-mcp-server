@@ -21,7 +21,7 @@
     "release": "standard-version",
     "release:minor": "standard-version --release-as minor",
     "release:major": "standard-version --release-as major",
-    "postrelease": "node -e \"const v=require('./package.json').version; const {execSync}=require('child_process'); execSync('npm version '+v+' --no-git-tag-version', {cwd:'packages/server'}); execSync('npm version '+v+' --no-git-tag-version', {cwd:'packages/vscode-extension'}); execSync('git add packages/server/package.json packages/vscode-extension/package.json'); execSync('git commit --amend --no-edit');\""
+    "postrelease": "node -e \"const v=require('./package.json').version; const {execSync}=require('child_process'); execSync('npm version '+v+' --no-git-tag-version', {cwd:'packages/server'}); execSync('npm version '+v+' --no-git-tag-version', {cwd:'packages/vscode-extension'}); execSync('git add packages/server/package.json packages/vscode-extension/package.json'); execSync('git commit --amend --no-edit'); execSync('git tag -f v'+v);\""
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
