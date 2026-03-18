@@ -51,8 +51,6 @@ jobs:
         run: |
           cd packages/server
           npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Upload npm debug log
         if: failure()
         uses: actions/upload-artifact@v4
