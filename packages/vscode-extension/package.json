@@ -2,7 +2,7 @@
   "name": "logscale-mcp-vscode",
   "displayName": "LogScale MCP Server",
   "description": "VS Code extension that provides an MCP server for querying CrowdStrike LogScale logs",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "publisher": "bhayanak",
   "license": "MIT",
   "repository": {
