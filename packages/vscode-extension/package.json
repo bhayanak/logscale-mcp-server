@@ -11,7 +11,7 @@
     "url": "https://github.com/bhayanak/logscale-mcp-server"
   },
   "engines": {
-    "vscode": "^1.96.0"
+    "vscode": "^1.99.0"
   },
   "categories": [
     "Other"
@@ -25,12 +25,19 @@
     "ai",
     "copilot"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
     "configuration": {
       "title": "LogScale MCP Server",
       "properties": {
+        "logscale.apiToken": {
+          "type": "string",
+          "description": "LogScale API token for authentication",
+          "order": 0
+        },
         "logscale.baseUrl": {
           "type": "string",
           "description": "LogScale instance URL (include path prefix like /logs if needed)",
@@ -62,6 +69,12 @@
       {
         "command": "logscale-mcp.showHealth",
         "title": "LogScale MCP: Show Server Health"
+      }
+    ],
+    "mcpServerDefinitionProviders": [
+      {
+        "id": "logscale-mcp",
+        "label": "LogScale"
       }
     ]
   },

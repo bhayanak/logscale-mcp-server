@@ -22,18 +22,7 @@ No need to write CQL queries manually — the AI assistant handles query constru
 
 ## Install
 
-### From VS Code Marketplace
-
-1. Open VS Code
-2. Go to Extensions (Cmd+Shift+X / Ctrl+Shift+X)
-3. Search for **"LogScale MCP Server"**
-4. Click **Install**
-
-### From VSIX
-
-```bash
-code --install-extension logscale-mcp-vscode-0.1.0.vsix
-```
+Install from marketplace, install button above.
 
 ## Configuration
 
@@ -41,13 +30,13 @@ Open VS Code Settings (Cmd+, / Ctrl+,) and search for **"LogScale"**:
 
 | Setting | Description | Default |
 |---------|-------------|---------|
+| `logscale.ApiToken` | LogScale API token | — |
 | `logscale.baseUrl` | LogScale instance URL (include path prefix like `/logs` if needed) | — |
 | `logscale.repository` | Default LogScale repository name | — |
 | `logscale.timeoutMs` | Maximum query poll timeout in milliseconds | `60000` |
 | `logscale.pollIntervalMs` | Interval between poll requests in milliseconds | `1000` |
 | `logscale.maxEvents` | Default pagination limit for events | `200` |
 
-> **Note:** The API token is stored securely in VS Code's Secret Storage and prompted on first use.
 
 ## MCP Tools
 
