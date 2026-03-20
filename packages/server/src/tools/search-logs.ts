@@ -2,7 +2,7 @@ import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { LogScaleClient } from "../logscale/client.js";
 import { LogScaleApiError } from "../logscale/client.js";
-import type { LogScaleConfig, MultiServerConfig } from "../logscale/types.js";
+import type { LogScaleConfig } from "../logscale/types.js";
 import type { ServerRegistry } from "../logscale/server-registry.js";
 import { buildQueryJobInput } from "../logscale/query-builder.js";
 import { formatQueryResult } from "../formatter.js";
@@ -23,7 +23,7 @@ export const searchLogsInputSchema = {
     .optional()
     .describe(
       "Name of the LogScale server to query (e.g., 'scdev01', 'hcipoc01', 'usdev01'). " +
-      "Use 'list_servers' tool to see available servers. Uses default server if omitted.",
+        "Use 'list_servers' tool to see available servers. Uses default server if omitted.",
     ),
 
   repository: z
@@ -172,17 +172,13 @@ export async function handleSearchLogs(
   }
 }
 
-export function registerSearchLogsTool(
-  server: McpServer,
-  registry: ServerRegistry,
-  config: MultiServerConfig,
-): void {
+export function registerSearchLogsTool(server: McpServer, registry: ServerRegistry): void {
   server.tool(
     "search_logs",
     "Search logs in LogScale using CrowdStrike Query Language (CQL). " +
       "Submits a query job, polls for completion, and returns results. " +
-    "Use pipe (|) to chain filters in queryString. " +
-    "Use the 'server' parameter to target a specific LogScale instance (see 'list_servers').",
+      "Use pipe (|) to chain filters in queryString. " +
+      "Use the 'server' parameter to target a specific LogScale instance (see 'list_servers').",
     searchLogsInputSchema,
     async (params) => {
       try {

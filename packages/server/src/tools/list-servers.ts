@@ -1,10 +1,7 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ServerRegistry } from "../logscale/server-registry.js";
 
-export function registerListServersTool(
-  server: McpServer,
-  registry: ServerRegistry,
-): void {
+export function registerListServersTool(server: McpServer, registry: ServerRegistry): void {
   server.tool(
     "list_servers",
     "List all configured LogScale server instances. " +

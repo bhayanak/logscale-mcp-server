@@ -1,5 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { loadConfig, loadMultiServerConfig, MAX_QUERY_STRING_LENGTH, MAX_REPOSITORY_NAME_LENGTH } from "../src/config.js";
+import {
+  loadConfig,
+  loadMultiServerConfig,
+  MAX_QUERY_STRING_LENGTH,
+  MAX_REPOSITORY_NAME_LENGTH,
+} from "../src/config.js";
 
 describe("loadConfig", () => {
   const originalEnv = process.env;
@@ -107,7 +112,12 @@ describe("loadMultiServerConfig", () => {
 
   it("should load from LOGSCALE_SERVERS JSON", () => {
     process.env.LOGSCALE_SERVERS = JSON.stringify([
-      { name: "scdev01", baseUrl: "https://scdev01.example.com/logs", apiToken: "token1", repository: "repo1" },
+      {
+        name: "scdev01",
+        baseUrl: "https://scdev01.example.com/logs",
+        apiToken: "token1",
+        repository: "repo1",
+      },
       { name: "hcipoc01", baseUrl: "https://hcipoc01.example.com/logs", apiToken: "token2" },
     ]);
     const config = loadMultiServerConfig();

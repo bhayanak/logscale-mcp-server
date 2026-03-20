@@ -16,8 +16,8 @@ export function createServer(config: MultiServerConfig): McpServer {
   const registry = new ServerRegistry(config);
 
   // Register all tools
-  registerSearchLogsTool(server, registry, config);
-  registerGetQueryJobTool(server, registry, config);
+  registerSearchLogsTool(server, registry);
+  registerGetQueryJobTool(server, registry);
   registerListServersTool(server, registry);
 
   // Health check resource — read via MCP resources/read

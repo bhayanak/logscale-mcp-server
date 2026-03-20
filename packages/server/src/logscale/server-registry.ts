@@ -33,15 +33,17 @@ export class ServerRegistry {
    * Get a client by server name. Falls back to default if name is undefined.
    * Throws if the server name is not found.
    */
-  getClient(serverName?: string): { client: LogScaleClient; config: LogScaleConfig; serverName: string } {
+  getClient(serverName?: string): {
+    client: LogScaleClient;
+    config: LogScaleConfig;
+    serverName: string;
+  } {
     const name = serverName ?? this.defaultServerName;
     const client = this.clients.get(name);
     const entry = this.entries.get(name);
     if (!client || !entry) {
       const available = this.getServerNames().join(", ");
-      throw new Error(
-        `Unknown LogScale server '${name}'. Available servers: ${available}`,
-      );
+      throw new Error(`Unknown LogScale server '${name}'. Available servers: ${available}`);
     }
     return {
       client,
@@ -61,7 +63,12 @@ export class ServerRegistry {
     return Array.from(this.entries.keys());
   }
 
-  getServerSummaries(): Array<{ name: string; baseUrl: string; repository?: string; isDefault: boolean }> {
+  getServerSummaries(): Array<{
+    name: string;
+    baseUrl: string;
+    repository?: string;
+    isDefault: boolean;
+  }> {
     return Array.from(this.entries.entries()).map(([name, entry]) => ({
       name,
       baseUrl: entry.baseUrl,

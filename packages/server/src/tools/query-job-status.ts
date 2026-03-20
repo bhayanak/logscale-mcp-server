@@ -2,7 +2,7 @@ import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { LogScaleClient } from "../logscale/client.js";
 import { LogScaleApiError } from "../logscale/client.js";
-import type { LogScaleConfig, MultiServerConfig } from "../logscale/types.js";
+import type { LogScaleConfig } from "../logscale/types.js";
 import type { ServerRegistry } from "../logscale/server-registry.js";
 import { formatJobStatus } from "../formatter.js";
 
@@ -14,7 +14,7 @@ export const queryJobInputSchema = {
     .optional()
     .describe(
       "Name of the LogScale server where the query job was submitted. " +
-      "Must match the server used in the original search_logs call. Uses default if omitted.",
+        "Must match the server used in the original search_logs call. Uses default if omitted.",
     ),
 
   repository: z
@@ -105,16 +105,12 @@ export async function handleGetQueryJob(
   }
 }
 
-export function registerGetQueryJobTool(
-  server: McpServer,
-  registry: ServerRegistry,
-  config: MultiServerConfig,
-): void {
+export function registerGetQueryJobTool(server: McpServer, registry: ServerRegistry): void {
   server.tool(
     "get_query_job",
     "Check the status and retrieve results of an existing LogScale query job. " +
-    "Useful for long-running queries or resuming a previous search. " +
-    "Use the 'server' parameter to specify which LogScale instance the job is on.",
+      "Useful for long-running queries or resuming a previous search. " +
+      "Use the 'server' parameter to specify which LogScale instance the job is on.",
     queryJobInputSchema,
     async (params) => {
       try {

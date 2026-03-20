@@ -21,7 +21,12 @@ const KEY_FIELDS = [
 /**
  * Format a QueryResult into a human-readable text summary for the AI.
  */
-export function formatQueryResult(result: QueryResult, query: string, repository: string, serverName?: string): string {
+export function formatQueryResult(
+  result: QueryResult,
+  query: string,
+  repository: string,
+  serverName?: string,
+): string {
   const parts: string[] = [];
 
   // --- Summary Header ---
@@ -54,7 +59,12 @@ export function formatQueryResult(result: QueryResult, query: string, repository
   return output;
 }
 
-function formatSummary(result: QueryResult, query: string, repository: string, serverName?: string): string {
+function formatSummary(
+  result: QueryResult,
+  query: string,
+  repository: string,
+  serverName?: string,
+): string {
   const meta = result.metaData;
   const startDate = new Date(meta.queryStart).toISOString();
   const endDate = new Date(meta.queryEnd).toISOString();
@@ -65,9 +75,7 @@ function formatSummary(result: QueryResult, query: string, repository: string, s
       ? "Cancelled"
       : `In Progress (${Math.round((meta.workDone / meta.totalWork) * 100)}%)`;
 
-  const lines = [
-    `Query: ${query}`,
-  ];
+  const lines = [`Query: ${query}`];
   if (serverName) lines.push(`Server: ${serverName}`);
   lines.push(
     `Repository: ${repository}`,
