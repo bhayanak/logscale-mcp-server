@@ -1,22 +1,24 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { LogScaleClient } from "./logscale/client.js";
-import type { LogScaleConfig } from "./logscale/types.js";
+import { ServerRegistry } from "./logscale/server-registry.js";
+import type { MultiServerConfig } from "./logscale/types.js";
 import { registerSearchLogsTool } from "./tools/search-logs.js";
 import { registerGetQueryJobTool } from "./tools/query-job-status.js";
+import { registerListServersTool } from "./tools/list-servers.js";
 
 const startedAt = Date.now();
 
-export function createServer(config: LogScaleConfig): McpServer {
+export function createServer(config: MultiServerConfig): McpServer {
   const server = new McpServer({
     name: "logscale-mcp-server",
     version: "0.1.0",
   });
 
-  const client = new LogScaleClient(config);
+  const registry = new ServerRegistry(config);
 
   // Register all tools
-  registerSearchLogsTool(server, client, config);
-  registerGetQueryJobTool(server, client, config);
+  registerSearchLogsTool(server, registry, config);
+  registerGetQueryJobTool(server, registry, config);
+  registerListServersTool(server, registry);
 
   // Health check resource — read via MCP resources/read
   server.resource(
@@ -31,12 +33,9 @@ export function createServer(config: LogScaleConfig): McpServer {
         uptime: `${uptimeSec}s`,
         uptimeMs,
         version: "0.1.0",
-        logscale: {
-          baseUrl: config.baseUrl.replace(/\/api.*/, "/..."),
-          defaultRepository: config.defaultRepository ?? "(none)",
-          timeoutMs: config.timeoutMs,
-        },
-        activeQueries: client.getActiveQueryCount(),
+        servers: registry.getServerSummaries(),
+        defaultServer: registry.defaultServerName,
+        activeQueries: registry.getTotalActiveQueries(),
         timestamp: new Date().toISOString(),
       };
 

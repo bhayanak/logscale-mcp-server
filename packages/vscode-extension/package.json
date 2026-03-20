@@ -34,20 +34,52 @@
     "configuration": {
       "title": "LogScale MCP Server",
       "properties": {
+        "logscale.servers": {
+          "type": "array",
+          "description": "Multiple LogScale server configurations. Each entry needs a name, baseUrl, apiToken, and optional repository.",
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "baseUrl",
+              "apiToken"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Short name for this server (e.g., 'scdev01', 'hcipoc01')"
+              },
+              "baseUrl": {
+                "type": "string",
+                "description": "LogScale instance URL (include path prefix like /logs if needed)"
+              },
+              "apiToken": {
+                "type": "string",
+                "description": "API token for this server"
+              },
+              "repository": {
+                "type": "string",
+                "description": "Default repository for this server"
+              }
+            }
+          },
+          "default": [],
+          "order": 0
+        },
         "logscale.apiToken": {
           "type": "string",
-          "description": "LogScale API token for authentication",
-          "order": 0
+          "description": "LogScale API token for authentication (single-server mode, used as 'default' server)",
+          "order": 1
         },
         "logscale.baseUrl": {
           "type": "string",
-          "description": "LogScale instance URL (include path prefix like /logs if needed)",
-          "order": 1
+          "description": "LogScale instance URL — single-server mode (include path prefix like /logs if needed)",
+          "order": 2
         },
         "logscale.repository": {
           "type": "string",
-          "description": "Default LogScale repository name",
-          "order": 2
+          "description": "Default LogScale repository name (single-server mode)",
+          "order": 3
         },
         "logscale.timeoutMs": {
           "type": "number",

@@ -71,6 +71,13 @@ function buildEnvFromConfig(
 ): Record<string, string> {
   const env: Record<string, string> = {};
 
+  // Multi-server: serialize logscale.servers array to LOGSCALE_SERVERS JSON
+  const servers = config.get<Array<{ name: string; baseUrl: string; apiToken: string; repository?: string }>>("servers");
+  if (servers && servers.length > 0) {
+    env.LOGSCALE_SERVERS = JSON.stringify(servers);
+  }
+
+  // Single-server settings (backward compat — becomes "default" server)
   const apiToken = config.get<string>("apiToken");
   if (apiToken) env.LOGSCALE_API_TOKEN = apiToken;
 

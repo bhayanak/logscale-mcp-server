@@ -21,11 +21,11 @@ const KEY_FIELDS = [
 /**
  * Format a QueryResult into a human-readable text summary for the AI.
  */
-export function formatQueryResult(result: QueryResult, query: string, repository: string): string {
+export function formatQueryResult(result: QueryResult, query: string, repository: string, serverName?: string): string {
   const parts: string[] = [];
 
   // --- Summary Header ---
-  parts.push(formatSummary(result, query, repository));
+  parts.push(formatSummary(result, query, repository, serverName));
 
   // --- Warnings ---
   if (result.warnings && result.warnings.length > 0) {
@@ -54,7 +54,7 @@ export function formatQueryResult(result: QueryResult, query: string, repository
   return output;
 }
 
-function formatSummary(result: QueryResult, query: string, repository: string): string {
+function formatSummary(result: QueryResult, query: string, repository: string, serverName?: string): string {
   const meta = result.metaData;
   const startDate = new Date(meta.queryStart).toISOString();
   const endDate = new Date(meta.queryEnd).toISOString();
@@ -65,14 +65,19 @@ function formatSummary(result: QueryResult, query: string, repository: string): 
       ? "Cancelled"
       : `In Progress (${Math.round((meta.workDone / meta.totalWork) * 100)}%)`;
 
-  return [
+  const lines = [
     `Query: ${query}`,
+  ];
+  if (serverName) lines.push(`Server: ${serverName}`);
+  lines.push(
     `Repository: ${repository}`,
     `Status: ${status}`,
     `Time Range: ${startDate} → ${endDate}`,
     `Events Found: ${meta.eventCount} (processed ${meta.processedEvents} events, ${processedMB} MB)`,
     `Query Time: ${meta.timeMillis}ms`,
-  ].join("\n");
+  );
+
+  return lines.join("\n");
 }
 
 function formatWarnings(warnings: { code: string; message: string; category: string }[]): string {

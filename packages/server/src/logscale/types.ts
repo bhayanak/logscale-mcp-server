@@ -205,6 +205,21 @@ export interface LogScaleConfig {
   maxEvents: number;
 }
 
+export interface LogScaleServerEntry {
+  name: string;
+  baseUrl: string;
+  apiToken: string;
+  repository?: string;
+}
+
+export interface MultiServerConfig {
+  servers: Map<string, LogScaleServerEntry>;
+  defaultServerName: string;
+  timeoutMs: number;
+  pollIntervalMs: number;
+  maxEvents: number;
+}
+
 export interface PollOptions {
   paginationLimit?: number;
   paginationOffset?: number;

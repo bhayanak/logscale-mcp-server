@@ -2,7 +2,8 @@ import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { LogScaleClient } from "../logscale/client.js";
 import { LogScaleApiError } from "../logscale/client.js";
-import type { LogScaleConfig } from "../logscale/types.js";
+import type { LogScaleConfig, MultiServerConfig } from "../logscale/types.js";
+import type { ServerRegistry } from "../logscale/server-registry.js";
 import { buildQueryJobInput } from "../logscale/query-builder.js";
 import { formatQueryResult } from "../formatter.js";
 import { MAX_QUERY_STRING_LENGTH, MAX_REPOSITORY_NAME_LENGTH } from "../config.js";
@@ -15,6 +16,14 @@ export const searchLogsInputSchema = {
         "'kubernetes.namespace_name = \"my-ns\"', " +
         "'ERROR | kubernetes.pod_name = \"my-pod-*\"', " +
         '\'"kubernetes.namespace_name" = "ai" | "kubernetes.labels.app" = "manager"\'',
+    ),
+
+  server: z
+    .string()
+    .optional()
+    .describe(
+      "Name of the LogScale server to query (e.g., 'scdev01', 'hcipoc01', 'usdev01'). " +
+      "Use 'list_servers' tool to see available servers. Uses default server if omitted.",
     ),
 
   repository: z
@@ -51,6 +60,7 @@ export const searchLogsInputSchema = {
 
 interface SearchLogsParams {
   queryString: string;
+  server?: string;
   repository?: string;
   start?: string | number;
   end?: string | number;
@@ -69,6 +79,7 @@ export async function handleSearchLogs(
   params: SearchLogsParams,
   client: LogScaleClient,
   config: LogScaleConfig,
+  serverName?: string,
 ): Promise<ToolResult> {
   const { queryString, repository, start, end, maxEvents, isLive } = params;
   const repo = repository ?? config.defaultRepository;
@@ -122,7 +133,7 @@ export async function handleSearchLogs(
       paginationLimit: limit,
     });
 
-    const formatted = formatQueryResult(result, queryString, repo);
+    const formatted = formatQueryResult(result, queryString, repo, serverName);
 
     return {
       content: [{ type: "text" as const, text: formatted }],
@@ -163,15 +174,27 @@ export async function handleSearchLogs(
 
 export function registerSearchLogsTool(
   server: McpServer,
-  client: LogScaleClient,
-  config: LogScaleConfig,
+  registry: ServerRegistry,
+  config: MultiServerConfig,
 ): void {
   server.tool(
     "search_logs",
     "Search logs in LogScale using CrowdStrike Query Language (CQL). " +
       "Submits a query job, polls for completion, and returns results. " +
-      "Use pipe (|) to chain filters in queryString.",
+    "Use pipe (|) to chain filters in queryString. " +
+    "Use the 'server' parameter to target a specific LogScale instance (see 'list_servers').",
     searchLogsInputSchema,
-    async (params) => handleSearchLogs(params, client, config),
+    async (params) => {
+      try {
+        const { client, config: srvConfig, serverName } = registry.getClient(params.server);
+        return handleSearchLogs(params, client, srvConfig, serverName);
+      } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
+        return {
+          content: [{ type: "text" as const, text: `Error: ${message}` }],
+          isError: true,
+        };
+      }
+    },
   );
 }

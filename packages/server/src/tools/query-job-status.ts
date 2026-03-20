@@ -2,11 +2,20 @@ import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { LogScaleClient } from "../logscale/client.js";
 import { LogScaleApiError } from "../logscale/client.js";
-import type { LogScaleConfig } from "../logscale/types.js";
+import type { LogScaleConfig, MultiServerConfig } from "../logscale/types.js";
+import type { ServerRegistry } from "../logscale/server-registry.js";
 import { formatJobStatus } from "../formatter.js";
 
 export const queryJobInputSchema = {
   jobId: z.string().describe("Query job ID returned from a previous search_logs call."),
+
+  server: z
+    .string()
+    .optional()
+    .describe(
+      "Name of the LogScale server where the query job was submitted. " +
+      "Must match the server used in the original search_logs call. Uses default if omitted.",
+    ),
 
   repository: z
     .string()
@@ -21,6 +30,7 @@ export const queryJobInputSchema = {
 
 interface QueryJobParams {
   jobId: string;
+  server?: string;
   repository?: string;
   maxEvents?: number;
 }
@@ -97,14 +107,26 @@ export async function handleGetQueryJob(
 
 export function registerGetQueryJobTool(
   server: McpServer,
-  client: LogScaleClient,
-  config: LogScaleConfig,
+  registry: ServerRegistry,
+  config: MultiServerConfig,
 ): void {
   server.tool(
     "get_query_job",
     "Check the status and retrieve results of an existing LogScale query job. " +
-      "Useful for long-running queries or resuming a previous search.",
+    "Useful for long-running queries or resuming a previous search. " +
+    "Use the 'server' parameter to specify which LogScale instance the job is on.",
     queryJobInputSchema,
-    async (params) => handleGetQueryJob(params, client, config),
+    async (params) => {
+      try {
+        const { client, config: srvConfig } = registry.getClient(params.server);
+        return handleGetQueryJob(params, client, srvConfig);
+      } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
+        return {
+          content: [{ type: "text" as const, text: `Error: ${message}` }],
+          isError: true,
+        };
+      }
+    },
   );
 }

@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { loadConfig } from "./config.js";
+import { loadMultiServerConfig } from "./config.js";
 import { createServer } from "./server.js";
 
 async function main(): Promise<void> {
-  const config = loadConfig();
+  const config = loadMultiServerConfig();
   const server = createServer(config);
   const transport = new StdioServerTransport();
 
