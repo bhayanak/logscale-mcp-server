@@ -1,6 +1,6 @@
 {
   "name": "logscale-mcp-monorepo",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "private": true,
   "description": "Monorepo for LogScale MCP Server + VS Code Extension",
   "repository": {
