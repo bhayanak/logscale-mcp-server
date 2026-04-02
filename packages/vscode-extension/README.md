@@ -1,4 +1,4 @@
-# LogScale MCP Server — VS Code Extension
+# LogScale (formerly Humio) MCP Server — VS Code Extension
 
 <p align="center">
   <a href="https://marketplace.visualstudio.com/items?itemName=logscale-mcp.logscale-mcp-vscode"><img src="https://img.shields.io/badge/VS%20Code-Marketplace-007ACC.svg?logo=visual-studio-code" alt="VS Code Marketplace"></a>
@@ -6,11 +6,11 @@
   <a href="https://modelcontextprotocol.io/"><img src="https://img.shields.io/badge/MCP-1.12-purple.svg" alt="MCP SDK 1.12"></a>
 </p>
 
-A VS Code extension that bundles the [LogScale MCP Server](https://www.npmjs.com/package/logscale-mcp-server) and provides a GUI-configured experience for querying CrowdStrike LogScale logs from AI assistants like **GitHub Copilot** and **Claude**.
+A VS Code extension that bundles the [LogScale (Humio) MCP Server](https://www.npmjs.com/package/logscale-mcp-server) and provides a GUI-configured experience for querying CrowdStrike LogScale logs from AI assistants like **GitHub Copilot** and **Claude**.
 
 ## What It Does
 
-Once installed, the extension starts an MCP server that lets you query LogScale logs through natural language in Copilot Chat:
+Once installed, the extension starts an MCP server that lets you query CrowdStrike Falcon LogScale(formerly Humio) logs through natural language in Copilot Chat:
 
 > "Show me errors in the production namespace from the last hour"
 

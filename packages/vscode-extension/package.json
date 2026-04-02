@@ -1,8 +1,8 @@
 {
   "name": "logscale-mcp-vscode",
-  "displayName": "LogScale MCP Server",
-  "description": "VS Code extension that provides an MCP server for querying CrowdStrike LogScale logs",
-  "version": "0.1.5",
+  "displayName": "LogScale(Humio) MCP Server",
+  "description": "VS Code extension that provides an MCP server for querying CrowdStrike Falcon LogScale formerly Humio logs",
+  "version": "0.1.6",
   "publisher": "bhayanak",
   "icon": "logo.png",
   "license": "MIT",
@@ -19,6 +19,7 @@
   ],
   "keywords": [
     "mcp",
+    "mcp server",
     "logscale",
     "crowdstrike",
     "cql",
