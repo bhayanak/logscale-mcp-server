@@ -1,4 +1,4 @@
-# LogScale (formerly Humio) MCP Server — VS Code Extension
+# Falcon LogScale (formerly Humio) MCP Server — VS Code Extension
 
 <p align="center">
   <a href="https://marketplace.visualstudio.com/items?itemName=logscale-mcp.logscale-mcp-vscode"><img src="https://img.shields.io/badge/VS%20Code-Marketplace-007ACC.svg?logo=visual-studio-code" alt="VS Code Marketplace"></a>

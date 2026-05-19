@@ -1,6 +1,9 @@
 <p align="center">
+  <img src="logo.png" alt="Falcon LogScale MCP Server" width="500" height="400" /> 
+</p>
+<p align="center">
   <strong>LogScale MCP Server</strong><br/>
-  <em>Query CrowdStrike LogScale logs from AI assistants via the Model Context Protocol</em>
+  <em>Query CrowdStrike Falcon LogScale(formerly humio) logs from AI assistants via the Model Context Protocol</em>  
 </p>
 
 <p align="center">
